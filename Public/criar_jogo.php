@@ -1,29 +1,25 @@
 <?php
-require_once __DIR__ . '/../Config/Database.php';
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST");
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
+require_once __DIR__ . '/../Model/jogos.php';
 
-$input = json_decode(file_get_contents('php://input'), true);
-$nome = $input['nome'] ?? null;
-$genero = $input['genero'] ?? null;
+$data = json_decode(file_get_contents("php://input"), true);
 
-if (!$nome) {
-    http_response_code(400);
-    echo json_encode(['erro' => 'Nome do jogo é obrigatório']);
+if (empty($data['nome'])) {
+    echo json_encode(["erro" => "Nome do jogo é obrigatório."]);
     exit;
 }
 
-try {
-    $conn = Database::connect();
 
-    $sql = "INSERT INTO jogos (nome, genero) VALUES (:nome, :genero)";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':nome' => $nome, ':genero' => $genero]);
+$nome = $data['nome'];
+$genero = isset($data['genero']) ? $data['genero'] : null;
+$classificacao = isset($data['classificacao']) ? $data['classificacao'] : null;
 
-    echo json_encode(['mensagem' => 'Jogo criado com sucesso']);
+$jogo = new Jogo();
 
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['erro' => 'Erro ao criar jogo', 'detalhe' => $e->getMessage()]);
+if ($jogo->criar($nome, $genero, $classificacao)) {
+    echo json_encode(["mensagem" => "Jogo criado com sucesso!"]);
+} else {
+    echo json_encode(["erro" => "Falha ao criar o jogo."]);
 }

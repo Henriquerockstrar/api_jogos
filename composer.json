@@ -1,4 +1,25 @@
 {
-    "name": "henrique/projeto-jogos",
-    "require": {}
+    "name": "henrique/api_jogos",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Henrique\\ApiJogos\\": "src/",
+            "Model\\": "Model",
+            "Controller\\": "Controller"
+        },
+        "files": [
+            "Config/database.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Henriquerockstrar",
+            "email": "macedohenrique322@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.0",
+        "ext-mbstring": "*"
+    }
 }

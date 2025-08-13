@@ -1,28 +1,21 @@
 <?php
-require_once __DIR__ . '/../Config/Database.php';
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: DELETE");
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
+require_once __DIR__ . '/../Model/jogos.php';
 
-$input = json_decode(file_get_contents('php://input'), true);
-$id = $input['id'] ?? null;
+$data = json_decode(file_get_contents("php://input"), true);
+$id = $data['id'] ?? null;
 
 if (!$id) {
-    http_response_code(400);
-    echo json_encode(['erro' => 'ID do jogo é obrigatório']);
+    echo json_encode(["erro" => "ID é obrigatório para deletar."]);
     exit;
 }
 
-try {
-    $conn = Database::connect();
+$jogo = new jogo();
 
-    $sql = "DELETE FROM jogos WHERE id = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':id' => $id]);
-
-    echo json_encode(['mensagem' => 'Jogo deletado com sucesso']);
-
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(['erro' => 'Erro ao deletar jogo', 'detalhe' => $e->getMessage()]);
+if ($jogo->deletar($id)) {
+    echo json_encode(["mensagem" => "Jogo deletado com sucesso."]);
+} else {
+    echo json_encode(["erro" => "Falha ao deletar o jogo."]);
 }
